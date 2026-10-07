@@ -197,7 +197,7 @@ export default function PostEditor() {
               <Info size={16} /> Promo Video Note
             </h4>
             <p className="text-xs text-brand-700 dark:text-brand-400 leading-relaxed">
-              The AVA Deep Meditation promotional video will be automatically injected into your article when published. You don't need to add it manually.
+              The Deep Meditation promotional video will be automatically injected into your article when published. You don't need to add it manually.
             </p>
           </div>
         </div>

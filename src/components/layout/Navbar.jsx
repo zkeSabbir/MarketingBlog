@@ -20,7 +20,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2 w-48 shrink-0">
             <Link to="/" className="flex items-center gap-2">
               <span className="text-rose-400 text-2xl">🌸</span>
-              <span className="font-extrabold text-lg text-gray-900 dark:text-white tracking-tight">AVA Deep</span>
+              <span className="font-extrabold text-lg text-gray-900 dark:text-white tracking-tight">Deep Meditation</span>
             </Link>
           </div>
 

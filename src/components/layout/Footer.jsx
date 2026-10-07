@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <span className="text-3xl">🧘‍♀️</span>
-              <span className="font-extrabold text-xl gradient-text">AVA Deep Meditation</span>
+              <span className="font-extrabold text-xl gradient-text">Deep Meditation</span>
             </Link>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 max-w-sm">
               Your go-to platform for sleep science, mindfulness, meditation guides, and wellness content.
@@ -71,7 +71,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} AVA Deep Meditation. All rights reserved.
+            © {new Date().getFullYear()} Deep Meditation. All rights reserved.
           </p>
           <p className="text-xs text-gray-400 flex items-center gap-1">
             Made with <Heart size={12} className="text-red-400 fill-red-400" /> for mindfulness practitioners worldwide
