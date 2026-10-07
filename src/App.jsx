@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   useEffect(() => {
     fetch('/posts.json')
@@ -10,7 +11,7 @@ function App() {
       .then(data => setPosts(data));
   }, []);
 
-  if (posts.length === 0) return <div>Loading...</div>;
+  if (posts.length === 0) return <div style={{textAlign:'center', padding:'50px', fontSize:'24px', fontWeight:'bold'}}>Loading thousands of posts...</div>;
 
   // Single Post View
   if (selectedPost) {
@@ -28,13 +29,17 @@ function App() {
           <div className="meta" style={{color: '#666', marginBottom: '20px'}}>
             By Admin • {new Date().toLocaleDateString()}
           </div>
-          <div className="video-player" style={{backgroundImage: `url(https://picsum.photos/1200/600?random=${selectedPost.id})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
-            <div style={{background: 'rgba(0,0,0,0.6)', padding: '20px', borderRadius: '50%', cursor: 'pointer'}}>
-              ▶ PLAY {selectedPost.video_title}
-            </div>
+          
+          <div className="video-player-real" style={{width: '100%', height: '500px', backgroundColor: '#000', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', marginBottom: '30px', backgroundImage: `url(https://picsum.photos/1200/600?random=${selectedPost.id})`, backgroundSize: 'cover', backgroundBlendMode: 'overlay'}}>
+             <div style={{width: '80px', height: '80px', backgroundColor: 'red', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,0,0,0.4)'}}>
+                <div style={{width: 0, height: 0, borderTop: '15px solid transparent', borderBottom: '15px solid transparent', borderLeft: '25px solid white', marginLeft: '5px'}}></div>
+             </div>
+             <h3 style={{marginTop: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>{selectedPost.video_title}</h3>
+             <p style={{color: '#ddd', fontSize: '0.9rem'}}>Full Video on our Channel</p>
           </div>
+
           <div className="article-content" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
-          <button onClick={() => setSelectedPost(null)} style={{marginTop: '40px', padding: '10px 20px', background: 'var(--text-dark)', color: 'white', border: 'none', cursor: 'pointer'}}>← Back to Home</button>
+          <button onClick={() => setSelectedPost(null)} style={{marginTop: '40px', padding: '15px 30px', background: 'var(--text-dark)', color: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer'}}>← BACK TO ALL ARTICLES</button>
         </div>
       </div>
     );
@@ -44,8 +49,10 @@ function App() {
   const heroPost = posts[0];
   const subHero1 = posts[1];
   const subHero2 = posts[2];
-  const mainPosts = posts.slice(3, 11);
-  const sidebarPosts = posts.slice(11, 16);
+  
+  // Exclude heroes from main list
+  const remainingPosts = posts.slice(3);
+  const visiblePosts = remainingPosts.slice(0, visibleCount);
 
   return (
     <div className="container">
@@ -71,7 +78,7 @@ function App() {
           <li><a href="#">Productivity</a></li>
           <li><a href="#">Lifestyle</a></li>
           <li><a href="#">Relaxation</a></li>
-          <li><a href="#">Videos</a></li>
+          <li><a href="#">All {posts.length} Posts</a></li>
         </ul>
       </nav>
 
@@ -104,60 +111,49 @@ function App() {
         </div>
       </div>
 
-      <div className="main-layout">
-        <main>
+      <div className="main-layout" style={{display: 'block'}}>
+        <main style={{width: '100%'}}>
           <div className="section-title">
-            <span>Latest Articles</span>
-            <span style={{fontSize: '0.8rem', color: '#666', fontWeight: 'normal'}}>View All</span>
+            <span>Latest Articles ({visiblePosts.length} of {posts.length})</span>
           </div>
           
-          <div className="post-grid">
-            {mainPosts.map(post => (
+          <div className="post-grid" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))'}}>
+            {visiblePosts.map(post => (
               <div className="post-card" key={post.id} onClick={() => setSelectedPost(post)} style={{cursor: 'pointer'}}>
                 <img src={`https://picsum.photos/400/250?random=${post.id}`} alt="" className="post-card-img" />
                 <div className="category">{post.category}</div>
-                <h3>{post.title}</h3>
+                <h3 style={{fontSize: '1.2rem'}}>{post.title}</h3>
                 <div className="meta">By Admin • {new Date().toLocaleDateString()}</div>
                 <p>{post.content.replace(/<[^>]+>/g, '').substring(0, 100)}...</p>
-              </div>
-            ))}
-          </div>
-        </main>
-
-        <aside>
-          <div className="sidebar-widget">
-            <div className="section-title"><span>Stay Connected</span></div>
-            <div className="social-counter">
-              <div className="social-box fb">125K <span>Fans</span></div>
-              <div className="social-box tw">82K <span>Followers</span></div>
-              <div className="social-box ig">64K <span>Followers</span></div>
-              <div className="social-box yt">1.2M <span>Subscribers</span></div>
-            </div>
-          </div>
-
-          <div className="sidebar-widget">
-            <div className="section-title"><span>Don't Miss</span></div>
-            {sidebarPosts.map(post => (
-              <div className="list-post" key={post.id} onClick={() => setSelectedPost(post)} style={{cursor: 'pointer'}}>
-                <img src={`https://picsum.photos/100/100?random=${post.id}`} className="list-post-img" alt="" />
-                <div className="list-post-info">
-                  <div style={{color: 'var(--primary-color)', fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'uppercase'}}>{post.category}</div>
-                  <h4>{post.title.substring(0, 50)}...</h4>
-                  <div style={{fontSize: '0.7rem', color: '#888'}}>Just now</div>
+                
+                <div style={{marginTop: '10px', fontSize: '0.8rem', color: 'red', fontWeight: 'bold'}}>
+                  ▶ WATCH: {post.video_title.substring(0, 30)}...
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="sidebar-widget">
-            <div style={{background: '#f8f8f8', border: '1px solid #eaeaea', padding: '20px', textAlign: 'center'}}>
-              <h3 style={{marginBottom: '10px'}}>Subscribe to Newsletter</h3>
-              <p style={{fontSize: '0.8rem', color: '#666', marginBottom: '15px'}}>Get the latest news and updates directly in your inbox.</p>
-              <input type="email" placeholder="Email Address" style={{width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc'}} />
-              <button style={{width: '100%', padding: '10px', background: 'var(--primary-color)', color: 'white', border: 'none', fontWeight: 'bold', cursor: 'pointer'}}>SUBSCRIBE</button>
+          
+          {visibleCount < remainingPosts.length && (
+            <div style={{textAlign: 'center', margin: '40px 0'}}>
+              <button 
+                onClick={() => setVisibleCount(prev => prev + 24)}
+                style={{
+                  padding: '15px 40px', 
+                  background: 'var(--primary-color)', 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '30px', 
+                  fontSize: '1.2rem', 
+                  fontWeight: 'bold', 
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                }}
+              >
+                LOAD MORE POSTS ↓
+              </button>
             </div>
-          </div>
-        </aside>
+          )}
+        </main>
       </div>
     </div>
   );
