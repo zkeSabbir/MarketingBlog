@@ -9,7 +9,7 @@ import RightSidebar from '@/components/layout/RightSidebar'
 
 import Home from '@/pages/Home'
 import SinglePost from '@/pages/SinglePost'
-import { Login, Register } from '@/pages/Auth'
+import Auth from '@/pages/Auth'
 import Dashboard from '@/pages/Dashboard'
 import PostEditor from '@/pages/PostEditor'
 import VendorProfile from '@/pages/VendorProfile'
@@ -46,8 +46,8 @@ function App() {
                 <Route path="/qa" element={<ThreeColumnLayout><QADiscussion /></ThreeColumnLayout>} />
                 
                 {/* Auth & Dashboard don't need 3 columns usually, but can be customized */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Auth />} />
+                <Route path="/register" element={<Auth />} />
                 <Route path="/dashboard" element={<div className="pt-20"><Dashboard /></div>} />
                 <Route path="/dashboard/new" element={<div className="pt-20"><PostEditor /></div>} />
                 <Route path="/dashboard/edit/:id" element={<div className="pt-20"><PostEditor /></div>} />
