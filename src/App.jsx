@@ -1,176 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import './index.css';
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from '@/contexts/ThemeContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 
-function App() {
-  const [posts, setPosts] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [selectedPost, setSelectedPost] = useState(null);
+import Navbar from '@/components/layout/Navbar'
+import LeftSidebar from '@/components/layout/LeftSidebar'
+import RightSidebar from '@/components/layout/RightSidebar'
 
-  useEffect(() => {
-    fetch('/posts.json')
-      .then(res => res.json())
-      .then(data => setPosts(data));
-  }, []);
+import Home from '@/pages/Home'
+import SinglePost from '@/pages/SinglePost'
+import { Login, Register } from '@/pages/Auth'
+import Dashboard from '@/pages/Dashboard'
+import PostEditor from '@/pages/PostEditor'
+import VendorProfile from '@/pages/VendorProfile'
 
-  if (posts.length === 0) return <div className="loading-screen">Loading AVADeepMeditation Platform...</div>;
-
-  const visiblePosts = posts.slice(0, visibleCount);
-
+function ThreeColumnLayout({ children }) {
   return (
-    <div className="app-container">
-      {/* Top Navbar */}
-      <header className="top-navbar">
-        <div className="logo-section" onClick={() => setSelectedPost(null)}>
-          <span className="logo-icon">🌸</span>
-          <span className="logo-text">AVA Deep</span>
-        </div>
-        <div className="search-section">
-          <input type="text" placeholder="Search topics, videos, meditation..." className="search-bar" />
-        </div>
-        <div className="auth-section">
-          <button className="btn-new-post">⊕ New Post</button>
-          <button className="btn-login">Login</button>
-        </div>
-      </header>
-
-      <div className="main-layout">
-        {/* Left Sidebar */}
-        <aside className="left-sidebar">
-          <div className="sidebar-menu">
-            <div className="menu-item active">🏠 Home</div>
-            <div className="menu-item">⭐ Experts</div>
-            <div className="menu-item">💬 Q&A</div>
-            <div className="menu-item">📈 Rankings</div>
-            <div className="menu-item">🛠 Services</div>
-          </div>
-
-          <div className="sidebar-topics">
-            <h3>Themes & Topics</h3>
-            {/* Get unique categories from posts */}
-            {[...new Set(posts.map(p => p.category_ru))].slice(0, 15).map((cat, idx) => (
-              <div className="topic-item" key={idx}>
-                <span className="topic-icon">{posts.find(p => p.category_ru === cat).category_icon}</span>
-                {cat}
-              </div>
-            ))}
-          </div>
-        </aside>
-
-        {/* Center Feed */}
-        <main className="center-feed">
-          {!selectedPost && (
-            <div className="feed-filters">
-              <span className="filter-chip active">New</span>
-              <span className="filter-chip">Popular</span>
-              <span className="filter-chip">Discussed</span>
-            </div>
-          )}
-
-          {selectedPost ? (
-            <div className="post-card single-view">
-              <button onClick={() => setSelectedPost(null)} className="back-btn">← Back to Feed</button>
-              <div className="post-header">
-                <div className="author-info">
-                  <div className="author-avatar">{selectedPost.author.charAt(0)}</div>
-                  <div className="author-meta">
-                    <strong>{selectedPost.author} 💎</strong>
-                    <span>{selectedPost.date} • {selectedPost.category_en}</span>
-                  </div>
-                </div>
-              </div>
-              <h1 className="post-title" style={{fontSize: '24px', margin: '15px 0'}}>{selectedPost.title}</h1>
-              <div className="post-content" dangerouslySetInnerHTML={{__html: selectedPost.content}} />
-            </div>
-          ) : (
-            <>
-              {visiblePosts.map(post => (
-                <div className="post-card" key={post.id} onClick={() => setSelectedPost(post)}>
-                  <div className="post-header">
-                    <div className="author-info">
-                      <div className="author-avatar">{post.author.charAt(0)}</div>
-                      <div className="author-meta">
-                        <strong>{post.author} 💎</strong>
-                        <span>{post.date} • {post.category_en}</span>
-                      </div>
-                    </div>
-                    <button className="btn-subscribe">Subscribe</button>
-                  </div>
-                  
-                  <h2 className="post-title">{post.title}</h2>
-                  
-                  <div className="post-snippet">
-                    {post.content.replace(/<[^>]+>/g, '').substring(0, 200)}...
-                    <span className="read-more">Read more</span>
-                  </div>
-
-                  {post.has_image && (
-                    <div className="post-image" style={{backgroundImage: `url(https://picsum.photos/800/400?random=${post.id})`}}></div>
-                  )}
-
-                  <div className="post-footer">
-                    <div className="engagement-stats">
-                      <span className="stat-item likes">❤️ {post.likes}</span>
-                      <span className="stat-item">🔥 {Math.floor(post.likes / 3)}</span>
-                      <span className="stat-item">😲 {Math.floor(post.likes / 10)}</span>
-                    </div>
-                    <div className="interaction-stats">
-                      <span>💬 {post.comments}</span>
-                      <span>🔖 {Math.floor(post.comments * 1.5)}</span>
-                      <span>👁️ {(post.views / 1000).toFixed(1)}k</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              <div className="load-more-container">
-                <button className="btn-load-more" onClick={() => setVisibleCount(prev => prev + 10)}>
-                  Load More Articles ↓
-                </button>
-              </div>
-            </>
-          )}
-        </main>
-
-        {/* Right Sidebar */}
-        <aside className="right-sidebar">
-          <div className="widget highlight-widget">
-            <h4>AVADeepMeditation</h4>
-            <p>Subscribe to our YouTube channel for daily deep sleep and meditation sounds.</p>
-            <a href="https://www.youtube.com/@AVADeepMeditation" target="_blank" className="btn-widget-link">Visit Channel</a>
-          </div>
-
-          <div className="widget">
-            <h4>Popular from Experts</h4>
-            <div className="widget-item">
-              <strong>Алиса Васильева 💎</strong>
-              <p>The ultimate guide to finding your inner peace...</p>
-              <span>👁️ 456</span>
-            </div>
-            <div className="widget-item">
-              <strong>Ирина Гордеева 💎</strong>
-              <p>How to use Keyboard Shortcuts to boost your productivity...</p>
-              <span>👁️ 456</span>
-            </div>
-          </div>
-
-          <div className="widget">
-            <h4>Popular Questions</h4>
-            <div className="widget-item">
-              <strong>Алиса Васильева</strong>
-              <p>What is the best time to meditate?</p>
-              <span>💬 24</span>
-            </div>
-            <div className="widget-item">
-              <strong>Евгения Петрова</strong>
-              <p>How does deep sleep affect muscle recovery?</p>
-              <span>💬 349</span>
-            </div>
-            <button className="btn-ask">❓ Ask a Question</button>
-          </div>
-        </aside>
+    <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-6 pt-24 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="hidden lg:block lg:col-span-3 xl:col-span-2">
+        <LeftSidebar />
+      </div>
+      <div className="lg:col-span-6 xl:col-span-7">
+        {children}
+      </div>
+      <div className="hidden lg:block lg:col-span-3 xl:col-span-3">
+        <RightSidebar />
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <div className="min-h-screen bg-[#f4f6f8] dark:bg-gray-950">
+            <Navbar />
+            <main>
+              <Routes>
+                <Route path="/" element={<ThreeColumnLayout><Home /></ThreeColumnLayout>} />
+                <Route path="/post/:slug" element={<ThreeColumnLayout><SinglePost /></ThreeColumnLayout>} />
+                <Route path="/vendor/:username" element={<ThreeColumnLayout><VendorProfile /></ThreeColumnLayout>} />
+                
+                {/* Auth & Dashboard don't need 3 columns usually, but can be customized */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/dashboard" element={<div className="pt-20"><Dashboard /></div>} />
+                <Route path="/dashboard/new" element={<div className="pt-20"><PostEditor /></div>} />
+                <Route path="/dashboard/edit/:id" element={<div className="pt-20"><PostEditor /></div>} />
+                
+                {/* Fallbacks */}
+                <Route path="*" element={
+                  <div className="text-center py-32">
+                    <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
+                    <p className="text-gray-500 mb-8">The page you are looking for doesn't exist.</p>
+                    <a href="/" className="text-rose-500 hover:underline">Go Home</a>
+                  </div>
+                } />
+              </Routes>
+            </main>
+          </div>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  )
+}
+
+export default App
