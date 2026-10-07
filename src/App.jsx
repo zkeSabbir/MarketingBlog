@@ -13,6 +13,7 @@ import { Login, Register } from '@/pages/Auth'
 import Dashboard from '@/pages/Dashboard'
 import PostEditor from '@/pages/PostEditor'
 import VendorProfile from '@/pages/VendorProfile'
+import QADiscussion from '@/pages/QADiscussion'
 
 function ThreeColumnLayout({ children }) {
   return (
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/" element={<ThreeColumnLayout><Home /></ThreeColumnLayout>} />
                 <Route path="/post/:slug" element={<ThreeColumnLayout><SinglePost /></ThreeColumnLayout>} />
                 <Route path="/vendor/:username" element={<ThreeColumnLayout><VendorProfile /></ThreeColumnLayout>} />
+                <Route path="/qa" element={<ThreeColumnLayout><QADiscussion /></ThreeColumnLayout>} />
                 
                 {/* Auth & Dashboard don't need 3 columns usually, but can be customized */}
                 <Route path="/login" element={<Login />} />
