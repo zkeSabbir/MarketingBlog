@@ -31,13 +31,13 @@ export default function SearchModal({ open, onClose }) {
   // Load popular posts
   useEffect(() => {
     if (!open) return
-    supabase
-      .from('posts')
-      .select('id, title, slug, category')
-      .eq('status', 'published')
-      .order('views', { ascending: false })
-      .limit(5)
-      .then(({ data }) => setPopular(data || []))
+    fetch('/blogs.json')
+      .then(res => res.json())
+      .then(blogs => {
+        // Just take the top 5 by views
+        setPopular(blogs.sort((a, b) => b.views - a.views).slice(0, 5))
+      })
+      .catch(console.error)
   }, [open])
 
   // Debounced search
@@ -45,13 +45,25 @@ export default function SearchModal({ open, onClose }) {
     debounce(async (q) => {
       if (q.trim().length < 2) { setResults([]); return }
       setLoading(true)
-      const { data } = await supabase
-        .from('posts')
-        .select('id, title, slug, category, thumbnail_url, profiles(display_name, username)')
-        .eq('status', 'published')
-        .or(`title.ilike.%${q}%,category.ilike.%${q}%,tags.cs.{${q}}`)
-        .limit(8)
-      setResults(data || [])
+      try {
+        const res = await fetch('/blogs.json')
+        const blogs = await res.json()
+        const lowerQ = q.toLowerCase()
+        const filtered = blogs.filter(b => 
+          b.title.toLowerCase().includes(lowerQ) || 
+          b.category.toLowerCase().includes(lowerQ)
+        ).slice(0, 8)
+        
+        // Add mocked profiles so it doesn't break the UI
+        const mapped = filtered.map(b => ({
+          ...b,
+          profiles: { display_name: b.authorName }
+        }))
+        
+        setResults(mapped)
+      } catch (e) {
+        console.error(e)
+      }
       setLoading(false)
     }, 250),
     []
