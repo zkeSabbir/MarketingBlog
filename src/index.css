@@ -102,7 +102,7 @@ body {
 
 /* ── Article Typography ───────────────────────────────────────── */
 .article-body {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 19px;
   line-height: 1.85;
   @apply text-gray-800 dark:text-gray-200;
