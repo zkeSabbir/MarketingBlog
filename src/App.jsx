@@ -31,11 +31,14 @@ function ThreeColumnLayout({ children }) {
   )
 }
 
+import ErrorBoundary from '@/components/ErrorBoundary'
+
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <div className="min-h-screen bg-[#f4f6f8] dark:bg-gray-950">
             <Navbar />
             <main>
@@ -66,6 +69,7 @@ function App() {
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   )
 }
 
