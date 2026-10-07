@@ -12,7 +12,8 @@ export default function RightSidebar() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/blogs.json')
+        // Use blogs_index.json for accurate total count (all 17,955 posts)
+        const res = await fetch('/blogs_index.json')
         const blogs = await res.json()
         
         setTotalPosts(blogs.length)

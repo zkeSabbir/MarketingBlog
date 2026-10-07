@@ -31,7 +31,7 @@ export default function SearchModal({ open, onClose }) {
   // Load popular posts
   useEffect(() => {
     if (!open) return
-    fetch('/blogs.json')
+    fetch('/blogs_index.json')
       .then(res => res.json())
       .then(blogs => {
         // Just take the top 5 by views
@@ -40,13 +40,13 @@ export default function SearchModal({ open, onClose }) {
       .catch(console.error)
   }, [open])
 
-  // Debounced search
+  // Debounced search across all 17,955 posts via blogs_index.json
   const search = useCallback(
     debounce(async (q) => {
       if (q.trim().length < 2) { setResults([]); return }
       setLoading(true)
       try {
-        const res = await fetch('/blogs.json')
+        const res = await fetch('/blogs_index.json')
         const blogs = await res.json()
         const lowerQ = q.toLowerCase()
         const filtered = blogs.filter(b => 

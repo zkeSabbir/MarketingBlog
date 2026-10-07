@@ -105,9 +105,23 @@ export default function SinglePost() {
     const loadPost = async () => {
       setLoading(true)
       try {
-        const res = await fetch('/blogs.json')
-        const blogs = await res.json()
-        const data = blogs.find(b => b.slug === slug)
+        // Step 1: Find the post in the index (metadata only)
+        const idxRes = await fetch('/blogs_index.json')
+        const allBlogs = await idxRes.json()
+        const metaPost = allBlogs.find(b => b.slug === slug)
+        
+        if (!metaPost) {
+          setPost(null)
+          setLoading(false)
+          return
+        }
+        
+        // Step 2: Calculate which chunk file has this post
+        const CHUNK_SIZE = 500
+        const chunkNum = Math.ceil(metaPost.id / CHUNK_SIZE)
+        const chunkRes = await fetch(`/blogs_chunk_${chunkNum}.json`)
+        const chunkBlogs = await chunkRes.json()
+        const data = chunkBlogs.find(b => b.slug === slug) || metaPost
         
         if (data) {
           data.profiles = {
@@ -120,10 +134,14 @@ export default function SinglePost() {
             points: 500
           }
           setPost(data)
-          setAuthorPosts(100)
+          setAuthorPosts(Math.floor(Math.random() * 50) + 20)
           
-          // Randomize related
-          setRelated(blogs.sort(() => 0.5 - Math.random()).slice(0, 4))
+          // Related posts - same category from index
+          const related = allBlogs
+            .filter(b => b.category === data.category && b.slug !== slug)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 4)
+          setRelated(related)
         } else {
           setPost(null)
         }

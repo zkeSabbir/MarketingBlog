@@ -13,7 +13,8 @@ export default function Category() {
     const fetchBlogs = async () => {
       setLoading(true)
       try {
-        const res = await fetch('/blogs.json')
+        // Use blogs_index.json which has all posts (no content field - much faster)
+        const res = await fetch('/blogs_index.json')
         let data = await res.json()
         
         // Filter by slug
@@ -31,7 +32,7 @@ export default function Category() {
         data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         
         setPosts(data)
-        setVisibleCount(10)
+        setVisibleCount(12)
       } catch (e) {
         console.error("Failed to load blogs", e)
       }

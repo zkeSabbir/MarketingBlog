@@ -16,7 +16,8 @@ export default function Home() {
     const fetchBlogs = async () => {
       setLoading(true)
       try {
-        const res = await fetch('/blogs.json')
+        // Use blogs_index.json which has all ~18k posts (metadata only, no content - faster)
+        const res = await fetch('/blogs_index.json')
         let data = await res.json()
         
         // Sorting/Shuffling logic based on tab
@@ -33,7 +34,7 @@ export default function Home() {
         }
         
         setPosts(data)
-        setVisibleCount(10) // Reset to 10 on tab change
+        setVisibleCount(12) // Reset on tab change
       } catch (e) {
         console.error("Failed to load blogs", e)
       }
