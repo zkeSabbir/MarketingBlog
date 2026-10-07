@@ -10,6 +10,7 @@ export default function Home() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('new') // 'new', 'popular', 'discussed'
+  const [visibleCount, setVisibleCount] = useState(10)
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -28,6 +29,7 @@ export default function Home() {
         }
         
         setPosts(data)
+        setVisibleCount(10) // Reset to 10 on tab change
       } catch (e) {
         console.error("Failed to load blogs", e)
       }
@@ -74,7 +76,19 @@ export default function Home() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
           </div>
         ) : posts.length > 0 ? (
-          posts.map(post => <PostCard key={post.id} post={post} />)
+          <>
+            {posts.slice(0, visibleCount).map(post => <PostCard key={post.id} post={post} />)}
+            {visibleCount < posts.length && (
+              <div className="pt-4 pb-8 flex justify-center">
+                <button 
+                  onClick={() => setVisibleCount(v => v + 10)}
+                  className="px-8 py-3 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold transition-colors shadow-sm"
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="p-12 text-center bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 text-gray-500">
             <h3 className="font-bold text-gray-900 dark:text-white mb-2">No posts yet</h3>

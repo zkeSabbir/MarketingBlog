@@ -17,6 +17,11 @@ const TOPICS = [
   { label: 'Breathwork', icon: Wind, to: '/category/breathwork', color: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-900/20' },
   { label: 'Mindfulness', icon: Leaf, to: '/category/mindfulness', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
   { label: 'Anxiety Relief', icon: Heart, to: '/category/anxiety-relief', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+  { label: 'Focus & Study', icon: Book, to: '/category/focus-study', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+  { label: 'Stress Relief', icon: Star, to: '/category/stress-relief', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+  { label: 'Self Care', icon: Heart, to: '/category/self-care', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20' },
+  { label: 'Yoga', icon: Smile, to: '/category/yoga', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
+  { label: 'Zen Living', icon: Home, to: '/category/zen-living', color: 'text-gray-500', bg: 'bg-gray-50 dark:bg-gray-900/20' },
 ]
 
 export default function LeftSidebar() {

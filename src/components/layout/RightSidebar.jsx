@@ -60,9 +60,9 @@ export default function RightSidebar() {
             href="https://www.youtube.com/@AVADeepMeditation" 
             target="_blank" 
             rel="noreferrer"
-            className="flex items-center justify-center w-full py-1.5 rounded-full bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 font-bold text-sm transition-colors mb-2"
+            className="flex items-center justify-center w-full py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors mb-2 shadow"
           >
-            Join on YouTube
+            View Channel
           </a>
         </div>
       </div>
