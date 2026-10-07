@@ -8,6 +8,7 @@ import LeftSidebar from '@/components/layout/LeftSidebar'
 import RightSidebar from '@/components/layout/RightSidebar'
 
 import Home from '@/pages/Home'
+import Category from '@/pages/Category'
 import SinglePost from '@/pages/SinglePost'
 import Auth from '@/pages/Auth'
 import Dashboard from '@/pages/Dashboard'
@@ -44,6 +45,7 @@ function App() {
             <main>
               <Routes>
                 <Route path="/" element={<ThreeColumnLayout><Home /></ThreeColumnLayout>} />
+                <Route path="/category/:slug" element={<ThreeColumnLayout><Category /></ThreeColumnLayout>} />
                 <Route path="/post/:slug" element={<ThreeColumnLayout><SinglePost /></ThreeColumnLayout>} />
                 <Route path="/vendor/:username" element={<ThreeColumnLayout><VendorProfile /></ThreeColumnLayout>} />
                 <Route path="/qa" element={<ThreeColumnLayout><QADiscussion /></ThreeColumnLayout>} />
