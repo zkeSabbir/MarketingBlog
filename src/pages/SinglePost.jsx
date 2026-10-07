@@ -136,6 +136,58 @@ export default function SinglePost() {
           setPost(data)
           setAuthorPosts(Math.floor(Math.random() * 50) + 20)
           
+          // Dynamic SEO meta tags for Google
+          document.title = `${data.title} | AVA Deep Meditation`
+          
+          // Meta description
+          let metaDesc = document.querySelector('meta[name="description"]')
+          if (!metaDesc) {
+            metaDesc = document.createElement('meta')
+            metaDesc.name = 'description'
+            document.head.appendChild(metaDesc)
+          }
+          const cleanExcerpt = data.content?.replace(/<[^>]+>/g, '').slice(0, 160) || data.title
+          metaDesc.content = cleanExcerpt
+
+          // Canonical link
+          let canonical = document.querySelector('link[rel="canonical"]')
+          if (!canonical) {
+            canonical = document.createElement('link')
+            canonical.rel = 'canonical'
+            document.head.appendChild(canonical)
+          }
+          canonical.href = window.location.href
+
+          // Google Structured Data (Article JSON-LD)
+          let schemaTag = document.getElementById('article-schema')
+          if (!schemaTag) {
+            schemaTag = document.createElement('script')
+            schemaTag.id = 'article-schema'
+            schemaTag.type = 'application/ld+json'
+            document.head.appendChild(schemaTag)
+          }
+          schemaTag.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": data.title,
+            "description": cleanExcerpt,
+            "image": data.thumbnail_url,
+            "author": {
+              "@type": "Person",
+              "name": data.authorName
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AVA Deep Meditation",
+              "logo": {
+                "@type": "ImageObject",
+                "url": window.location.origin + "/favicon.svg"
+              }
+            },
+            "datePublished": data.created_at,
+            "mainEntityOfPage": window.location.href
+          })
+          
           // Related posts - same category from index
           const related = allBlogs
             .filter(b => b.category === data.category && b.slug !== slug)
