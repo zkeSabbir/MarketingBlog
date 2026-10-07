@@ -7,11 +7,15 @@ export default function RightSidebar() {
   const [popularExperts, setPopularExperts] = useState([])
   const [popularQuestions, setPopularQuestions] = useState([])
 
+  const [totalPosts, setTotalPosts] = useState(0)
+
   useEffect(() => {
     async function load() {
       try {
         const res = await fetch('/blogs.json')
         const blogs = await res.json()
+        
+        setTotalPosts(blogs.length)
         
         // Add mocked profiles
         const mapped = blogs.map(b => ({
@@ -44,16 +48,20 @@ export default function RightSidebar() {
           <p className="text-[13px] text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
             A community dedicated to exploring mindfulness, deep sleep, anxiety relief, and the science of inner peace.
           </p>
-          <div className="flex items-center gap-6 text-sm mb-4 border-b border-gray-100 dark:border-gray-800 pb-4">
+          <div className="flex items-center gap-4 text-sm mb-4 border-b border-gray-100 dark:border-gray-800 pb-4">
             <div>
               <div className="font-bold text-gray-900 dark:text-white">124k</div>
-              <div className="text-gray-500 text-xs">Members</div>
+              <div className="text-gray-500 text-[11px] uppercase tracking-wider font-semibold">Members</div>
             </div>
             <div>
               <div className="font-bold text-green-500 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> 541
               </div>
-              <div className="text-gray-500 text-xs">Online</div>
+              <div className="text-gray-500 text-[11px] uppercase tracking-wider font-semibold">Online</div>
+            </div>
+            <div>
+              <div className="font-bold text-blue-500">{totalPosts}</div>
+              <div className="text-gray-500 text-[11px] uppercase tracking-wider font-semibold">Posts</div>
             </div>
           </div>
           <a 

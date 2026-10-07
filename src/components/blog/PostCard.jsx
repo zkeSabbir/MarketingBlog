@@ -11,9 +11,9 @@ export default function PostCard({ post }) {
     category, created_at
   } = post
 
-  const authorName = profiles?.display_name || 'Anonymous'
-  const authorUsername = profiles?.username || 'user'
-  const authorAvatar = profiles?.avatar_url || `https://api.dicebear.com/8.x/avataaars/svg?seed=${authorUsername}`
+  const authorName = post.authorName || profiles?.display_name || 'Sarah Jenkins'
+  const authorUsername = profiles?.username || post.authorName?.replace(/\s+/g, '').toLowerCase() || 'user'
+  const authorAvatar = post.authorAvatar || profiles?.avatar_url || `https://api.dicebear.com/8.x/avataaars/svg?seed=${authorUsername}`
   
   // Extract text from HTML content for the snippet
   const extractText = (html) => {

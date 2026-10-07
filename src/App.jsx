@@ -15,6 +15,7 @@ import Dashboard from '@/pages/Dashboard'
 import PostEditor from '@/pages/PostEditor'
 import VendorProfile from '@/pages/VendorProfile'
 import QADiscussion from '@/pages/QADiscussion'
+import { Experts, Rankings, Services } from '@/pages/DummyPages'
 
 function ThreeColumnLayout({ children }) {
   return (
@@ -49,6 +50,9 @@ function App() {
                 <Route path="/post/:slug" element={<ThreeColumnLayout><SinglePost /></ThreeColumnLayout>} />
                 <Route path="/vendor/:username" element={<ThreeColumnLayout><VendorProfile /></ThreeColumnLayout>} />
                 <Route path="/qa" element={<ThreeColumnLayout><QADiscussion /></ThreeColumnLayout>} />
+                <Route path="/vendors" element={<ThreeColumnLayout><Experts /></ThreeColumnLayout>} />
+                <Route path="/leaderboard" element={<ThreeColumnLayout><Rankings /></ThreeColumnLayout>} />
+                <Route path="/services" element={<ThreeColumnLayout><Services /></ThreeColumnLayout>} />
                 
                 {/* Auth & Dashboard don't need 3 columns usually, but can be customized */}
                 <Route path="/login" element={<Auth />} />
