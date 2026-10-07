@@ -188,11 +188,19 @@ export default function SinglePost() {
     return match
   })
 
-  // Extract YouTube embed URL from content if present, or assign AVA fallback video
-  const ytMatch = post.content?.match(/src="(https:\/\/www\.youtube\.com\/embed\/[^"?]+)/i)
-  const videoEmbedUrl = ytMatch ? ytMatch[1] : (post.youtube_id ? `https://www.youtube.com/embed/${post.youtube_id}` : 'https://www.youtube.com/embed/9Q6sLbnlW1U')
+  // 10 Official AVA Deep Meditation Channel Videos
+  const AVA_CHANNEL_VIDEOS = [
+    'BNJ__q5XYe8', '34wcl6BHCJI', 'XowQeieLzw4', 'EZ4csbueMLE',
+    'RjjLFpzKZGw', 'kVcg1bvdxFI', 'li-0x4vDLio', '3nsCjQ-O4dA',
+    'NftPn5AyII8', 'AecixCkngX8'
+  ]
+  const defaultAvaVideo = AVA_CHANNEL_VIDEOS[(post.id || 1) % AVA_CHANNEL_VIDEOS.length]
 
-  // Remove the inline video from content to avoid duplicate player
+  // Extract YouTube embed URL from content if present, or assign AVA channel video
+  const ytMatch = post.content?.match(/src="(https:\/\/www\.youtube\.com\/embed\/[^"?]+)/i)
+  const videoEmbedUrl = ytMatch ? ytMatch[1] : `https://www.youtube.com/embed/${defaultAvaVideo}`
+
+  // Remove the inline video from content so it stays exclusively at the top
   let cleanContent = htmlWithIds
   if (ytMatch) {
     cleanContent = cleanContent.replace(/<div class="my-8 rounded-2xl overflow-hidden[^>]*>.*?<\/iframe><\/div>/gis, '')

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
-const FALLBACK_VIDEO = 'https://www.youtube.com/embed/9Q6sLbnlW1U'
+const FALLBACK_VIDEO = 'https://www.youtube.com/embed/BNJ__q5XYe8'
 const CHANNEL_URL = 'https://www.youtube.com/@AVADeepMeditation'
 
 export default function PromoVideo({ className = '' }) {
