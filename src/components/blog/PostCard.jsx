@@ -1,96 +1,123 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Eye, Heart, Share2, MessageCircle, Flame, Smile } from 'lucide-react'
-import { cn, truncate, fmtNum } from '@/lib/utils'
+import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, MoreHorizontal, CheckCircle2 } from 'lucide-react'
+import { cn, truncate, fmtNum, formatDate } from '@/lib/utils'
 
 export default function PostCard({ post }) {
   const {
     slug, title, content = '', thumbnail_url,
-    profiles, likes_count = 0, views = 0,
-    category
+    profiles, likes_count = 0, views = 0, views_count = 0,
+    category, created_at
   } = post
 
   const authorName = profiles?.display_name || 'Anonymous'
   const authorUsername = profiles?.username || 'user'
   const authorAvatar = profiles?.avatar_url || `https://api.dicebear.com/8.x/avataaars/svg?seed=${authorUsername}`
-  const snippet = truncate(content, 180)
+  
+  // Extract text from HTML content for the snippet
+  const extractText = (html) => {
+    const span = document.createElement('span')
+    span.innerHTML = html
+    return span.textContent || span.innerText || ''
+  }
+  const snippet = truncate(extractText(content), 200)
+  
+  const totalViews = views || views_count || 0
 
   return (
     <motion.article
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm hover:shadow-md transition-shadow"
+      className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm"
     >
-      {/* Header: Author info */}
-      <div className="flex justify-between items-center mb-4">
-        <Link to={`/vendor/${authorUsername}`} className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0 border border-rose-200">
-            {authorAvatar.includes('dicebear') ? (
-              <span className="font-bold text-rose-500 uppercase">{authorName.charAt(0)}</span>
-            ) : (
-              <img src={authorAvatar} alt={authorName} className="w-full h-full rounded-full object-cover" />
-            )}
-          </div>
-          <div>
-            <div className="text-sm font-extrabold text-gray-900 dark:text-gray-100 group-hover:text-rose-500 transition-colors flex items-center gap-1">
-              {authorName} <span className="text-blue-500 text-xs">💎</span>
+      {/* Header: Author Info (Quora style) */}
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex gap-2.5">
+          <Link to={`/vendor/${authorUsername}`} className="shrink-0 mt-0.5">
+            <img 
+              src={authorAvatar} 
+              alt={authorName} 
+              className="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-gray-800 hover:opacity-90 transition-opacity" 
+            />
+          </Link>
+          <div className="flex flex-col leading-tight">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Link to={`/vendor/${authorUsername}`} className="font-bold text-[15px] text-gray-900 dark:text-gray-100 hover:underline">
+                {authorName}
+              </Link>
+              {profiles?.verified && <CheckCircle2 size={14} className="text-blue-500 fill-blue-500/20" />}
+              <span className="text-gray-500 text-sm hidden sm:inline">•</span>
+              <span className="text-blue-600 dark:text-blue-400 text-[13px] hover:underline cursor-pointer font-medium">Follow</span>
             </div>
-            <div className="text-xs text-gray-400">
-              Today • {category}
+            <div className="text-[13px] text-gray-500 mt-0.5 flex items-center gap-1.5">
+              <span>Practitioner in {category}</span>
+              <span>•</span>
+              <span>{formatDate(created_at)}</span>
             </div>
           </div>
-        </Link>
-        <button className="px-4 py-1.5 rounded-full border border-rose-400 text-rose-500 text-xs font-bold hover:bg-rose-50 transition-colors">
-          Subscribe
+        </div>
+        <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1">
+          <MoreHorizontal size={20} />
         </button>
       </div>
 
-      {/* Body */}
-      <div className="mb-4">
-        <Link to={`/post/${slug}`}>
-          <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 leading-tight mb-2 hover:text-rose-500 transition-colors">
+      {/* Body: Title and Content */}
+      <div className="mb-3">
+        <Link to={`/post/${slug}`} className="block group">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 leading-snug mb-1.5 group-hover:underline">
             {title}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
-            Welcome to our deep dive on {title}. When exploring the fascinating world of mindfulness, it becomes clear that taking the right approach... <span className="text-rose-500 font-medium">Read more</span>
-          </p>
+          {snippet && (
+            <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-relaxed font-serif">
+              {snippet}... <span className="text-blue-600 font-sans text-[14px] hover:underline">Read more</span>
+            </p>
+          )}
         </Link>
       </div>
 
-      {/* Thumbnail */}
-      <Link to={`/post/${slug}`} className="block mb-4 overflow-hidden rounded-2xl bg-gray-100">
-        {thumbnail_url ? (
+      {/* Optional Thumbnail */}
+      {thumbnail_url && (
+        <Link to={`/post/${slug}`} className="block mb-4 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800">
           <img 
             src={thumbnail_url} 
             alt={title} 
-            className="w-full h-auto max-h-96 object-cover hover:opacity-95 transition-opacity"
+            className="w-full h-auto max-h-[400px] object-cover hover:opacity-95 transition-opacity"
           />
-        ) : (
-          <div className="w-full h-48 bg-rose-50 flex items-center justify-center">
-            <span className="text-4xl">📄</span>
-          </div>
-        )}
-      </Link>
+        </Link>
+      )}
 
-      {/* Footer Stats */}
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-rose-500 bg-rose-50 px-2.5 py-1.5 rounded-full">
-            <Heart size={14} className="fill-rose-500" /> {fmtNum(likes_count || 1166)}
+      {/* Action Bar (Quora Style Pill Buttons) */}
+      <div className="flex items-center justify-between mt-2 pt-1">
+        <div className="flex items-center gap-2">
+          
+          {/* Upvote / Downvote Pill */}
+          <div className="flex items-center bg-gray-100/80 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-l-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors">
+              <ArrowBigUp size={20} strokeWidth={1.5} />
+              <span>{fmtNum(likes_count || 0)}</span>
+            </button>
+            <div className="w-px h-5 bg-gray-300 dark:bg-gray-600"></div>
+            <button className="px-2.5 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-r-full text-gray-600 dark:text-gray-300 transition-colors">
+              <ArrowBigDown size={20} strokeWidth={1.5} />
+            </button>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-orange-500">
-            <Flame size={14} className="fill-orange-500" /> {fmtNum(388)}
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-yellow-500">
-            <Smile size={14} className="fill-yellow-500" /> {fmtNum(116)}
-          </div>
+
+          {/* Comments */}
+          <button className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors">
+            <MessageSquare size={18} strokeWidth={1.5} />
+            <span>24</span>
+          </button>
+
+          {/* Share */}
+          <button className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex">
+            <Share2 size={18} strokeWidth={1.5} />
+            <span>Share</span>
+          </button>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-medium text-gray-400">
-          <span className="flex items-center gap-1 hover:text-gray-600 cursor-pointer"><Share2 size={14} /> 49</span>
-          <span className="flex items-center gap-1 hover:text-gray-600 cursor-pointer"><MessageCircle size={14} /> 72</span>
-          <span className="flex items-center gap-1"><Eye size={14} /> {fmtNum(views || 11100)}</span>
+        <div className="text-[13px] font-medium text-gray-500 px-2">
+          {fmtNum(totalViews)} views
         </div>
       </div>
     </motion.article>
