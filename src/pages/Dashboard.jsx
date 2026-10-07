@@ -26,14 +26,14 @@ export default function Dashboard() {
     // Fallback to views_count if views is null/missing in some rows
     const { data: myPosts } = await supabase
       .from('posts')
-      .select('id, title, slug, status, created_at, views, views_count, likes_count')
+      .select('id, title, slug, status, created_at, views, likes_count')
       .eq('author_id', user.id)
       .order('created_at', { ascending: false })
       
     if (myPosts) {
       setPosts(myPosts)
       
-      const totalViews = myPosts.reduce((sum, p) => sum + (p.views || p.views_count || 0), 0)
+      const totalViews = myPosts.reduce((sum, p) => sum + (p.views || 0), 0)
       const totalLikes = myPosts.reduce((sum, p) => sum + (p.likes_count || 0), 0)
       
       setStats({
@@ -187,7 +187,7 @@ export default function Dashboard() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-4 text-gray-500">
-                        <span className="flex items-center gap-1.5" title="Views"><Eye size={16}/> {fmtNum(post.views || post.views_count || 0)}</span>
+                        <span className="flex items-center gap-1.5" title="Views"><Eye size={16}/> {fmtNum(post.views || 0)}</span>
                         <span className="flex items-center gap-1.5" title="Likes"><Heart size={16}/> {fmtNum(post.likes_count)}</span>
                       </div>
                     </td>
