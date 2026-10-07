@@ -16,6 +16,34 @@ export default function Home() {
     loadPosts(tab)
   }, [tab])
 
+  // AUTO-SEEDER: Runs once if the user is logged in to automatically insert 30 posts.
+  useEffect(() => {
+    if (user && !localStorage.getItem('posts_seeded')) {
+      const seedPosts = async () => {
+        try {
+          const res = await fetch('/posts_seed.json')
+          const posts = await res.json()
+          
+          // Add author_id to each post
+          const postsWithAuthor = posts.map(p => ({
+            ...p,
+            author_id: user.id
+          }))
+          
+          const { error } = await supabase.from('posts').insert(postsWithAuthor)
+          
+          if (!error) {
+            localStorage.setItem('posts_seeded', 'true')
+            loadPosts(tab) // reload feed
+          }
+        } catch (e) {
+          console.error('Seeding failed:', e)
+        }
+      }
+      seedPosts()
+    }
+  }, [user])
+
   const loadPosts = async (currentTab) => {
     setLoading(true)
     // Order by views if available, else fallback safely (depends on schema version)
