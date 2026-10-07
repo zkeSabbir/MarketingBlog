@@ -37,11 +37,15 @@ export default function LeftSidebar() {
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               )}
             >
-              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={cn(
-                "transition-transform",
-                isActive ? "text-gray-900 dark:text-white" : "text-gray-500"
-              )} />
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={cn(
+                    "transition-transform",
+                    isActive ? "text-gray-900 dark:text-white" : "text-gray-500"
+                  )} />
+                  {item.label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
