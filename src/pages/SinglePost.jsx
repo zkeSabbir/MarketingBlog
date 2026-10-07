@@ -188,7 +188,17 @@ export default function SinglePost() {
     return match
   })
 
-  const safeHtml = DOMPurify.sanitize(htmlWithIds, {
+  // Extract YouTube embed URL from content if present, or assign AVA fallback video
+  const ytMatch = post.content?.match(/src="(https:\/\/www\.youtube\.com\/embed\/[^"?]+)/i)
+  const videoEmbedUrl = ytMatch ? ytMatch[1] : (post.youtube_id ? `https://www.youtube.com/embed/${post.youtube_id}` : 'https://www.youtube.com/embed/9Q6sLbnlW1U')
+
+  // Remove the inline video from content to avoid duplicate player
+  let cleanContent = htmlWithIds
+  if (ytMatch) {
+    cleanContent = cleanContent.replace(/<div class="my-8 rounded-2xl overflow-hidden[^>]*>.*?<\/iframe><\/div>/gis, '')
+  }
+
+  const safeHtml = DOMPurify.sanitize(cleanContent, {
     ADD_TAGS: ['iframe'],
     ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'src', 'width', 'height', 'id'],
     ALLOWED_URI_REGEXP: /^(https?:|data:image\/)/,
@@ -208,14 +218,14 @@ export default function SinglePost() {
         className="max-w-3xl mx-auto px-4 sm:px-6 py-10"
       >
         {/* Back */}
-        <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors mb-8 group">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors mb-8 group">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to Articles
         </Link>
 
         {/* Category */}
         <Link to={`/category/${post.category?.toLowerCase().replace(/\s+/g, '-')}`}
           className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 mb-4">
-          {post.category_icon} {post.category}
+          {post.category_icon || '🧘'} {post.category}
         </Link>
 
         {/* Title */}
@@ -246,12 +256,22 @@ export default function SinglePost() {
           </div>
         </div>
 
-        {/* Thumbnail */}
-        {post.thumbnail_url && (
+        {/* Primary Featured YouTube Video */}
+        {videoEmbedUrl ? (
+          <div className="mb-8 rounded-2xl overflow-hidden shadow-2xl bg-black border border-gray-800 aspect-video relative">
+            <iframe
+              src={`${videoEmbedUrl}?autoplay=0&rel=0&modestbranding=1`}
+              title={post.title}
+              className="w-full h-full border-0 absolute inset-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        ) : post.thumbnail_url ? (
           <div className="aspect-video rounded-2xl overflow-hidden mb-8 shadow-lg">
             <img src={post.thumbnail_url} alt={post.title} className="w-full h-full object-cover" />
           </div>
-        )}
+        ) : null}
 
         {/* Table of Contents */}
         <TableOfContents html={post.content} />

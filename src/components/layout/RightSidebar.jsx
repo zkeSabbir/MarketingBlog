@@ -33,6 +33,46 @@ export default function RightSidebar() {
     load()
   }, [])
 
+  // Dynamic realistic live online visitors count (8k - 10k+, fluctuating, day/night curve in Bangladesh)
+  const [onlineCount, setOnlineCount] = useState(8420)
+
+  useEffect(() => {
+    const calcOnline = () => {
+      // Get current hour in Bangladesh (UTC+6)
+      const now = new Date()
+      const utcHour = now.getUTCHours() + now.getUTCMinutes() / 60
+      const bdHour = (utcHour + 6) % 24
+
+      // Daytime (10 AM to 11 PM BD time) has peak visitors (9,200 - 10,400)
+      // Night/early morning (2 AM to 7 AM) has lower traffic (8,000 - 8,600)
+      let baseTraffic = 8300
+      if (bdHour >= 9 && bdHour <= 23) {
+        // Daytime peak curve
+        const peakFactor = Math.sin(((bdHour - 9) / 14) * Math.PI)
+        baseTraffic = 8800 + Math.floor(peakFactor * 1300) // Up to ~10,100 - 10,300
+      } else {
+        baseTraffic = 8100 + Math.floor(Math.random() * 300)
+      }
+
+      // Add natural random fluctuation +/- 65
+      const jitter = Math.floor((Math.random() - 0.5) * 130)
+      return Math.max(8020, baseTraffic + jitter)
+    }
+
+    setOnlineCount(calcOnline())
+
+    // Live pulsing fluctuation every 3-5 seconds
+    const interval = setInterval(() => {
+      setOnlineCount(prev => {
+        const delta = Math.floor((Math.random() - 0.48) * 14)
+        const next = prev + delta
+        return next < 8000 ? 8050 : next > 10500 ? 10420 : next
+      })
+    }, 3500)
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <aside className="sticky top-[88px] space-y-4">
       
@@ -55,13 +95,14 @@ export default function RightSidebar() {
               <div className="text-gray-500 text-[11px] uppercase tracking-wider font-semibold">Members</div>
             </div>
             <div>
-              <div className="font-bold text-green-500 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> 541
+              <div className="font-bold text-green-500 flex items-center gap-1.5 transition-all">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span>{onlineCount.toLocaleString()}</span>
               </div>
               <div className="text-gray-500 text-[11px] uppercase tracking-wider font-semibold">Online</div>
             </div>
             <div>
-              <div className="font-bold text-blue-500">{totalPosts}</div>
+              <div className="font-bold text-blue-500">{totalPosts.toLocaleString()}</div>
               <div className="text-gray-500 text-[11px] uppercase tracking-wider font-semibold">Posts</div>
             </div>
           </div>

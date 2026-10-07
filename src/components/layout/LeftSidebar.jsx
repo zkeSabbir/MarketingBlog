@@ -38,7 +38,8 @@ export default function LeftSidebar() {
   const [counts, setCounts] = useState({})
 
   useEffect(() => {
-    fetch('/blogs.json')
+    // Fetch from blogs_index.json which contains all 17,955 posts
+    fetch('/blogs_index.json')
       .then(res => res.json())
       .then(data => {
         const c = {}
@@ -105,7 +106,7 @@ export default function LeftSidebar() {
                 </div>
                 {count > 0 && (
                   <span className="text-[10px] font-bold bg-gray-100 dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-700 text-gray-500 px-2 py-0.5 rounded-full transition-colors">
-                    {count}
+                    {count.toLocaleString()}
                   </span>
                 )}
               </Link>
