@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import { TrendingUp, Users, Info, ShieldCheck } from 'lucide-react'
 
 export default function RightSidebar() {
   const [popularExperts, setPopularExperts] = useState([])
@@ -8,21 +9,19 @@ export default function RightSidebar() {
 
   useEffect(() => {
     async function load() {
-      // Fetch popular experts posts
       const { data: exp } = await supabase
         .from('posts')
         .select('id, title, slug, views, profiles(display_name, avatar_url, verified)')
         .eq('status', 'published')
         .order('likes_count', { ascending: false })
-        .limit(2)
+        .limit(3)
       
-      // Fetch popular questions/posts
       const { data: ques } = await supabase
         .from('posts')
         .select('id, title, slug, views, profiles(display_name, avatar_url)')
         .eq('status', 'published')
         .order('views', { ascending: false })
-        .limit(2)
+        .limit(3)
 
       if (exp) setPopularExperts(exp)
       if (ques) setPopularQuestions(ques)
@@ -31,65 +30,85 @@ export default function RightSidebar() {
   }, [])
 
   return (
-    <aside className="sticky top-[88px] space-y-6">
+    <aside className="sticky top-[88px] space-y-4">
       
-      {/* Promo Box */}
-      <div className="bg-rose-100 dark:bg-rose-900/30 rounded-2xl p-5">
-        <h3 className="font-extrabold text-gray-900 dark:text-white mb-2 text-base">AVADeepMeditation</h3>
-        <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-          Subscribe to our YouTube channel for daily deep sleep and meditation sounds.
-        </p>
-        <a 
-          href="https://www.youtube.com/@AVADeepMeditation" 
-          target="_blank" 
-          rel="noreferrer"
-          className="text-sm font-bold text-rose-500 hover:text-rose-600 transition-colors"
-        >
-          Visit Channel
-        </a>
+      {/* About Community (Reddit Style) */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        <div className="h-10 bg-blue-500 dark:bg-blue-600"></div>
+        <div className="px-4 pb-4">
+          <div className="flex items-center gap-3 -mt-4 mb-3">
+            <div className="w-12 h-12 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center p-1">
+              <div className="w-full h-full bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center text-xl">🧘</div>
+            </div>
+            <h2 className="font-bold text-gray-900 dark:text-white pt-4 text-base">Deep Meditation</h2>
+          </div>
+          <p className="text-[13px] text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+            A community dedicated to exploring mindfulness, deep sleep, anxiety relief, and the science of inner peace.
+          </p>
+          <div className="flex items-center gap-6 text-sm mb-4 border-b border-gray-100 dark:border-gray-800 pb-4">
+            <div>
+              <div className="font-bold text-gray-900 dark:text-white">124k</div>
+              <div className="text-gray-500 text-xs">Members</div>
+            </div>
+            <div>
+              <div className="font-bold text-green-500 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> 541
+              </div>
+              <div className="text-gray-500 text-xs">Online</div>
+            </div>
+          </div>
+          <a 
+            href="https://www.youtube.com/@AVADeepMeditation" 
+            target="_blank" 
+            rel="noreferrer"
+            className="flex items-center justify-center w-full py-1.5 rounded-full bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 font-bold text-sm transition-colors mb-2"
+          >
+            Join on YouTube
+          </a>
+        </div>
       </div>
 
-      {/* Popular from Experts */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
-        <h3 className="font-extrabold text-gray-900 dark:text-white mb-4 text-sm">Popular from Experts</h3>
+      {/* Rules (Reddit Style) */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-4">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2">
+          <ShieldCheck size={16} /> Community Rules
+        </h3>
+        <ol className="space-y-3 text-[13px] text-gray-600 dark:text-gray-400 list-decimal pl-4 font-medium">
+          <li className="pl-1">Be respectful and compassionate.</li>
+          <li className="pl-1">No medical advice. Consult a professional.</li>
+          <li className="pl-1">High-quality posts only. No spam.</li>
+          <li className="pl-1">Self-promotion is limited to weekends.</li>
+        </ol>
+      </div>
+
+      {/* Trending (Quora / Reddit Style) */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-4">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2">
+          <TrendingUp size={16} className="text-blue-500" /> Trending Topics
+        </h3>
         <div className="space-y-4">
-          {popularExperts.map(post => (
-            <div key={post.id}>
-              <div className="text-xs font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-1">
-                {post.profiles?.display_name} {post.profiles?.verified && <span className="text-rose-400">💎</span>}
+          {popularExperts.map((post, idx) => (
+            <div key={post.id} className="group">
+              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1.5">
+                <span className="text-gray-400">0{idx + 1}</span> • {post.profiles?.display_name} 
+                {post.profiles?.verified && <span className="text-blue-500">✔</span>}
               </div>
-              <Link to={`/post/${post.slug}`} className="text-sm text-gray-600 dark:text-gray-400 hover:text-rose-500 line-clamp-2 leading-snug transition-colors">
+              <Link to={`/post/${post.slug}`} className="text-[14px] font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-500 line-clamp-2 leading-snug transition-colors">
                 {post.title}
               </Link>
-              <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
-                👁️ {post.views}
-              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Popular Questions */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
-        <h3 className="font-extrabold text-gray-900 dark:text-white mb-4 text-sm">Popular Questions</h3>
-        <div className="space-y-4">
-          {popularQuestions.map(post => (
-            <div key={post.id}>
-              <div className="text-xs font-bold text-gray-900 dark:text-white mb-1">
-                {post.profiles?.display_name}
-              </div>
-              <Link to={`/post/${post.slug}`} className="text-sm text-gray-600 dark:text-gray-400 hover:text-rose-500 line-clamp-2 leading-snug transition-colors">
-                {post.title}
-              </Link>
-              <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
-                👁️ {post.views}
-              </div>
-            </div>
-          ))}
-        </div>
-        <button className="w-full mt-4 py-2 rounded-xl bg-green-400/90 text-white font-bold text-sm hover:bg-green-500 transition-colors">
-          ? Ask a Question
-        </button>
+      {/* Footer Links */}
+      <div className="px-2 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-gray-400">
+        <a href="#" className="hover:underline">About</a>
+        <a href="#" className="hover:underline">Careers</a>
+        <a href="#" className="hover:underline">Terms</a>
+        <a href="#" className="hover:underline">Privacy</a>
+        <a href="#" className="hover:underline">Acceptable Use</a>
+        <div className="w-full mt-1">AVA Deep Meditation © 2024</div>
       </div>
 
     </aside>
