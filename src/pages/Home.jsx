@@ -19,9 +19,13 @@ export default function Home() {
         const res = await fetch('/blogs.json')
         let data = await res.json()
         
-        // Sorting logic based on tab
+        // Sorting/Shuffling logic based on tab
         if (tab === 'new') {
-          data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          // Shuffle array to show different posts on every reload
+          for (let i = data.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [data[i], data[j]] = [data[j], data[i]];
+          }
         } else if (tab === 'popular') {
           data.sort((a, b) => b.views - a.views)
         } else {

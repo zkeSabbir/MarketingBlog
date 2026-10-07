@@ -11,7 +11,7 @@ export default function Navbar() {
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-100 dark:border-gray-800">
-        <div className="h-full px-4 md:px-6 flex items-center justify-between gap-4">
+        <div className="h-full max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between gap-4">
           
           {/* Left: Logo */}
           <div className="flex items-center gap-2 w-48 shrink-0">
