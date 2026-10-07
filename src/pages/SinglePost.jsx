@@ -36,7 +36,9 @@ function TableOfContents({ html }) {
   const re = /<h([23])[^>]*>(.+?)<\/h[23]>/gi
   let m
   while ((m = re.exec(html)) !== null) {
-    headings.push({ level: parseInt(m[1]), text: m[2].replace(/<[^>]+>/g, ''), id: m[2].replace(/<[^>]+>/g, '').toLowerCase().replace(/\s+/g, '-') })
+    const text = m[2].replace(/<[^>]+>/g, '')
+    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
+    headings.push({ level: parseInt(m[1]), text, id })
   }
   if (headings.length < 3) return null
   return (
@@ -156,9 +158,21 @@ export default function SinglePost() {
     </div>
   )
 
-  const safeHtml = DOMPurify.sanitize(post.content, {
+  // Inject IDs into headings so TOC links work
+  let htmlWithIds = post.content
+  const headingRe = /<h([23])([^>]*)>(.+?)<\/h[23]>/gi
+  htmlWithIds = htmlWithIds.replace(headingRe, (match, level, attrs, text) => {
+    // Only inject if id is not already present
+    if (!attrs.includes('id=')) {
+      const id = text.replace(/<[^>]+>/g, '').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
+      return `<h${level}${attrs} id="${id}">${text}</h${level}>`
+    }
+    return match
+  })
+
+  const safeHtml = DOMPurify.sanitize(htmlWithIds, {
     ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'src', 'width', 'height'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'src', 'width', 'height', 'id'],
     ALLOWED_URI_REGEXP: /^(https?:|data:image\/)/,
   })
 
