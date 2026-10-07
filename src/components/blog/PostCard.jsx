@@ -103,14 +103,21 @@ export default function PostCard({ post }) {
             </button>
           </div>
 
-          {/* Comments */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors">
+          {/* Comments (Visual only) */}
+          <button className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors cursor-default" onClick={e => e.preventDefault()}>
             <MessageSquare size={18} strokeWidth={1.5} />
-            <span>24</span>
+            <span>{(post.id * 13) % 150 + 5}</span>
           </button>
 
           {/* Share */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              navigator.clipboard.writeText(window.location.origin + '/post/' + slug);
+              alert('Link copied to clipboard!');
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex"
+          >
             <Share2 size={18} strokeWidth={1.5} />
             <span>Share</span>
           </button>
