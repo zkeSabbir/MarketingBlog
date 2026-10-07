@@ -6,101 +6,42 @@ import PostCard from '@/components/blog/PostCard'
 import { HelpCircle, FileText, Image as ImageIcon } from 'lucide-react'
 
 export default function Home() {
-  const { user, profile } = useAuth()
   const navigate = useNavigate()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('new') // 'new', 'popular', 'discussed'
 
   useEffect(() => {
-    loadPosts(tab)
-  }, [tab])
-
-  // AUTO-SEEDER: Runs once if the user is logged in to automatically insert 30 posts.
-  useEffect(() => {
-    if (user && !localStorage.getItem('posts_seeded')) {
-      const seedPosts = async () => {
-        try {
-          const res = await fetch('/posts_seed.json')
-          const posts = await res.json()
-          
-          // Add author_id to each post
-          const postsWithAuthor = posts.map(p => ({
-            ...p,
-            author_id: user.id
-          }))
-          
-          const { error } = await supabase.from('posts').insert(postsWithAuthor)
-          
-          if (!error) {
-            localStorage.setItem('posts_seeded', 'true')
-            loadPosts(tab) // reload feed
-          }
-        } catch (e) {
-          console.error('Seeding failed:', e)
+    const fetchBlogs = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch('/blogs.json')
+        let data = await res.json()
+        
+        // Sorting logic based on tab
+        if (tab === 'new') {
+          data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        } else if (tab === 'popular') {
+          data.sort((a, b) => b.views - a.views)
+        } else {
+          data.sort((a, b) => b.likes_count - a.likes_count)
         }
+        
+        setPosts(data)
+      } catch (e) {
+        console.error("Failed to load blogs", e)
       }
-      seedPosts()
+      setLoading(false)
     }
-  }, [user])
-
-  const loadPosts = async (currentTab) => {
-    setLoading(true)
-    // Order by views if available, else fallback safely (depends on schema version)
-    let query = supabase
-      .from('posts')
-      .select('*, profiles(display_name, username, avatar_url, verified)')
-      .eq('status', 'published')
-      
-    if (currentTab === 'new') {
-      query = query.order('created_at', { ascending: false })
-    } else if (currentTab === 'popular') {
-      // Fallback handle for both old 'views' and new 'views_count'
-      query = query.order('views', { ascending: false })
-    } else {
-      query = query.order('likes_count', { ascending: false })
-    }
-
-    const { data } = await query.limit(10)
-    if (data) setPosts(data)
-    setLoading(false)
-  }
+    
+    fetchBlogs()
+  }, [tab])
 
   return (
     <div className="max-w-2xl mx-auto w-full font-sans pb-20">
       
-      {/* Quora-style Create Box */}
-      {user && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 mb-6 overflow-hidden">
-          <div className="p-4 flex gap-3">
-            <img 
-              src={profile?.avatar_url || `https://api.dicebear.com/8.x/avataaars/svg?seed=${user.email}`} 
-              alt="User" 
-              className="w-10 h-10 rounded-full border border-gray-200 object-cover shrink-0"
-            />
-            <button 
-              onClick={() => navigate('/dashboard/new')}
-              className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-left px-4 rounded-full text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors"
-            >
-              What do you want to ask or share with the community?
-            </button>
-          </div>
-          
-          <div className="flex items-center px-4 py-2 border-t border-gray-100 dark:border-gray-800">
-            <button onClick={() => navigate('/qa')} className="flex-1 flex items-center justify-center gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors">
-              <HelpCircle size={18} className="text-blue-500" /> Ask
-            </button>
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
-            <button onClick={() => navigate('/dashboard/new')} className="flex-1 flex items-center justify-center gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors">
-              <FileText size={18} className="text-teal-500" /> Article
-            </button>
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
-            <button onClick={() => navigate('/dashboard/new')} className="flex-1 flex items-center justify-center gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors">
-              <ImageIcon size={18} className="text-amber-500" /> Media
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Feed Title */}
+      <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Latest Articles</h1>
 
       {/* Quora-style Tabs */}
       <div className="flex items-center gap-1 mb-4">

@@ -9,22 +9,21 @@ export default function RightSidebar() {
 
   useEffect(() => {
     async function load() {
-      const { data: exp } = await supabase
-        .from('posts')
-        .select('id, title, slug, views, profiles(display_name, avatar_url, verified)')
-        .eq('status', 'published')
-        .order('likes_count', { ascending: false })
-        .limit(3)
-      
-      const { data: ques } = await supabase
-        .from('posts')
-        .select('id, title, slug, views, profiles(display_name, avatar_url)')
-        .eq('status', 'published')
-        .order('views', { ascending: false })
-        .limit(3)
-
-      if (exp) setPopularExperts(exp)
-      if (ques) setPopularQuestions(ques)
+      try {
+        const res = await fetch('/blogs.json')
+        const blogs = await res.json()
+        
+        // Add mocked profiles
+        const mapped = blogs.map(b => ({
+          ...b,
+          profiles: { display_name: b.authorName, verified: true }
+        }))
+        
+        setPopularExperts(mapped.sort((a, b) => b.likes_count - a.likes_count).slice(0, 3))
+        setPopularQuestions(mapped.sort((a, b) => b.views - a.views).slice(0, 3))
+      } catch (e) {
+        console.error(e)
+      }
     }
     load()
   }, [])

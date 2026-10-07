@@ -100,62 +100,39 @@ export default function SinglePost() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    const loadPost = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch('/blogs.json')
+        const blogs = await res.json()
+        const data = blogs.find(b => b.slug === slug)
+        
+        if (data) {
+          data.profiles = {
+            display_name: data.authorName,
+            username: 'avadeepmeditation',
+            avatar_url: data.authorAvatar,
+            bio: 'Meditation & wellness writer',
+            verified: true,
+            followers_count: 124000,
+            points: 500
+          }
+          setPost(data)
+          setAuthorPosts(100)
+          
+          // Randomize related
+          setRelated(blogs.sort(() => 0.5 - Math.random()).slice(0, 4))
+        } else {
+          setPost(null)
+        }
+      } catch (e) {
+        console.error(e)
+        setPost(null)
+      }
+      setLoading(false)
+    }
     loadPost()
   }, [slug])
-
-  const loadPost = async () => {
-    setLoading(true)
-    const { data } = await supabase
-      .from('posts')
-      .select('*, profiles(id, display_name, username, avatar_url, bio, points, followers_count, verified), post_votes(vote_type)')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .single()
-
-    if (!data) { setLoading(false); return }
-    setPost(data)
-
-    // Track view (dedupe per session per 24h)
-    const sessionId = getSessionId()
-    const viewKey = `view_${data.id}_${sessionId}`
-    if (!sessionStorage.getItem(viewKey)) {
-      sessionStorage.setItem(viewKey, '1')
-      await supabase.from('post_views').upsert({ post_id: data.id, session_id: sessionId, user_id: user?.id || null }, { onConflict: 'post_id,session_id' })
-      await supabase.rpc('increment_post_views', { post_id_arg: data.id })
-    }
-
-    // Related posts (same category)
-    const { data: rel } = await supabase
-      .from('posts')
-      .select('*, profiles(display_name, username, avatar_url)')
-      .eq('status', 'published')
-      .eq('category', data.category)
-      .neq('id', data.id)
-      .order('likes_count', { ascending: false })
-      .limit(4)
-
-    // More from author
-    const { data: moreAuth } = await supabase
-      .from('posts')
-      .select('*, profiles(display_name, username, avatar_url)')
-      .eq('status', 'published')
-      .eq('author_id', data.author_id)
-      .neq('id', data.id)
-      .order('created_at', { ascending: false })
-      .limit(3)
-
-    // Author post count
-    const { count } = await supabase
-      .from('posts')
-      .select('*', { count: 'exact', head: true })
-      .eq('author_id', data.author_id)
-      .eq('status', 'published')
-
-    setRelated(rel || [])
-    setMoreFromAuthor(moreAuth || [])
-    setAuthorPosts(count || 0)
-    setLoading(false)
-  }
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href)
